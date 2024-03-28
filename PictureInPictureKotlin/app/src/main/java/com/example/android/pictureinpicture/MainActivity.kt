@@ -29,7 +29,6 @@ import android.os.Bundle
 import android.util.Rational
 import android.view.View
 import androidx.activity.trackPipAnimationHintView
-import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -38,6 +37,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.android.pictureinpicture.databinding.MainActivityBinding
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /** Intent action for stopwatch controls from Picture-in-Picture mode.  */
 private const val ACTION_STOPWATCH_CONTROL = "stopwatch_control"
@@ -55,7 +55,7 @@ private const val REQUEST_START_OR_PAUSE = 4
  */
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModel()
     private lateinit var binding: MainActivityBinding
 
     /**

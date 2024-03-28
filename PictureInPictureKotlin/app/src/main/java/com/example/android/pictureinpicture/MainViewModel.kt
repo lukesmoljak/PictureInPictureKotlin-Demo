@@ -16,7 +16,6 @@
 
 package com.example.android.pictureinpicture
 
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,13 +26,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.time.Duration
 
-class MainViewModel: ViewModel() {
+class MainViewModel(
+    private val systemClockHelper: SystemClockHelper
+): ViewModel() {
 
     private var job: Job? = null
 
-    private var startUptimeMillis = SystemClock.uptimeMillis()
+    private var startUptimeMillis = systemClockHelper.uptimeMillis()
     private val timeMillis = MutableLiveData(0L)
 
     private val _started = MutableLiveData(false)
@@ -63,9 +63,9 @@ class MainViewModel: ViewModel() {
     }
 
     private suspend fun CoroutineScope.start() {
-        startUptimeMillis = SystemClock.uptimeMillis() - (timeMillis.value ?: 0L)
+        startUptimeMillis = systemClockHelper.uptimeMillis() - (timeMillis.value ?: 0L)
         while (isActive) {
-            timeMillis.value = SystemClock.uptimeMillis() - startUptimeMillis
+            timeMillis.value = systemClockHelper.uptimeMillis() - startUptimeMillis
             // Updates on every render frame.
             awaitFrame()
         }
@@ -75,7 +75,7 @@ class MainViewModel: ViewModel() {
      * Clears the stopwatch to 00:00:00.
      */
     fun clear() {
-        startUptimeMillis = SystemClock.uptimeMillis()
+        startUptimeMillis = systemClockHelper.uptimeMillis()
         timeMillis.value = 0L
     }
 }
