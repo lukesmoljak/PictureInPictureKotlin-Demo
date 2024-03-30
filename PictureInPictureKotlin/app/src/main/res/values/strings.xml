@@ -45,4 +45,5 @@
     ]]></string>
     <string name="switch_custom">Switch to custom actions example</string>
     <string name="title_bigbuckbunny">Big Buck Bunny</string>
+    <string name="movie_timer_title">Stopwatch: </string>
 </resources>

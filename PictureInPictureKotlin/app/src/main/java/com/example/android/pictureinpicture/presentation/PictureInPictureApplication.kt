@@ -1,4 +1,4 @@
-package com.example.android.pictureinpicture
+package com.example.android.pictureinpicture.presentation
 
 import android.app.Application
 import com.example.android.pictureinpicture.di.appModule

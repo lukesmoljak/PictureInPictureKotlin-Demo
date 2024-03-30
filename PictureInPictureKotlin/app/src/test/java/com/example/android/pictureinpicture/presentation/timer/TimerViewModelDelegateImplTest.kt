@@ -1,10 +1,12 @@
-package com.example.android.pictureinpicture
+package com.example.android.pictureinpicture.presentation.timer
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.example.android.TestDispatcherRule
+import com.example.android.pictureinpicture.presentation.util.CoroutinesHelper
+import com.example.android.pictureinpicture.presentation.util.SystemClockHelper
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
@@ -20,9 +22,9 @@ import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class MainViewModelTest {
+class TimerViewModelDelegateImplTest {
 
-    private lateinit var sut: MainViewModel
+    private lateinit var sut: TimerViewModelDelegateImpl
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
@@ -44,7 +46,7 @@ class MainViewModelTest {
         MockKAnnotations.init(this)
 
         every { systemClockHelper.uptimeMillis() } returns MAR_22_2024_MIDNIGHT_UTC_MILLIS
-        sut = MainViewModel(
+        sut = TimerViewModelDelegateImpl(
             systemClockHelper = systemClockHelper,
             coroutinesHelper = coroutinesHelper
         )

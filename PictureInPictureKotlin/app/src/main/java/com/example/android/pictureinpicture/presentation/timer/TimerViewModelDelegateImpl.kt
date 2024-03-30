@@ -1,45 +1,38 @@
-/*
- * Copyright (C) 2021 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+package com.example.android.pictureinpicture.presentation.timer
 
-package com.example.android.pictureinpicture
-
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
-import androidx.lifecycle.viewModelScope
+import com.example.android.pictureinpicture.presentation.util.CoroutinesHelper
+import com.example.android.pictureinpicture.presentation.util.SystemClockHelper
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.lang.Exception
 
-class MainViewModel(
+class TimerViewModelDelegateImpl(
     private val systemClockHelper: SystemClockHelper,
-    private val coroutinesHelper: CoroutinesHelper
-): ViewModel() {
+    private val coroutinesHelper: CoroutinesHelper,
+) : TimerViewModelDelegate {
+
+    init {
+        Log.d("TimerViewModelDelegateImpl", this.hashCode().toString())
+    }
 
     private var job: Job? = null
+    private val scope = CoroutineScope(Dispatchers.Main.immediate)
 
     private var startUptimeMillis = systemClockHelper.uptimeMillis()
     private val timeMillis = MutableLiveData(0L)
 
     private val _started = MutableLiveData(false)
 
-    val started: LiveData<Boolean> = _started
-    val time = timeMillis.map { millis ->
+    override val started: LiveData<Boolean> = _started
+
+    override val time = timeMillis.map { millis ->
         val minutes = millis / 1000 / 60
         val m = minutes.toString().padStart(2, '0')
         val seconds = (millis / 1000) % 60
@@ -52,13 +45,19 @@ class MainViewModel(
     /**
      * Starts the stopwatch if it is not yet started, or pauses it if it is already started.
      */
-    fun startOrPause() {
+    override fun startOrPause() {
         if (_started.value == true) {
             _started.value = false
             job?.cancel()
         } else {
             _started.value = true
-            job = viewModelScope.launch { start() }
+            job = scope.launch {
+                try {
+                    start()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
         }
     }
 
@@ -74,7 +73,7 @@ class MainViewModel(
     /**
      * Clears the stopwatch to 00:00:00.
      */
-    fun clear() {
+    override fun clear() {
         startUptimeMillis = systemClockHelper.uptimeMillis()
         timeMillis.value = 0L
     }

@@ -19,7 +19,7 @@
     package="com.example.android.pictureinpicture">
 
     <application
-        android:name=".PictureInPictureApplication"
+        android:name=".presentation.PictureInPictureApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -27,7 +27,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.main.MainActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="true"
             android:supportsPictureInPicture="true">
@@ -38,7 +38,7 @@
         </activity>
 
         <activity
-            android:name=".MovieActivity"
+            android:name=".presentation.movie.MovieActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:supportsPictureInPicture="true" />
 

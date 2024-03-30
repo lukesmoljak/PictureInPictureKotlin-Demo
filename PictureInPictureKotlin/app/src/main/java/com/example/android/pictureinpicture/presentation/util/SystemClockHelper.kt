@@ -1,4 +1,4 @@
-package com.example.android.pictureinpicture
+package com.example.android.pictureinpicture.presentation.util
 
 import android.os.SystemClock
 

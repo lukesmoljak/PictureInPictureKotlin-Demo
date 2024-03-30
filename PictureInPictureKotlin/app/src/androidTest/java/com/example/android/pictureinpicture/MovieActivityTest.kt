@@ -33,7 +33,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.filters.LargeTest
-import com.example.android.pictureinpicture.widget.MovieView
+import com.example.android.pictureinpicture.presentation.movie.MovieActivity
+import com.example.android.pictureinpicture.presentation.widget.MovieView
 import com.google.common.truth.Truth.assertThat
 import org.hamcrest.Description
 import org.hamcrest.Matcher

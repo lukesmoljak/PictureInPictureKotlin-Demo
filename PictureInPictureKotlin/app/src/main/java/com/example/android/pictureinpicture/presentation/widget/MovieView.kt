@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.pictureinpicture.widget
+package com.example.android.pictureinpicture.presentation.widget
 
 import android.content.Context
 import android.graphics.Color
@@ -148,8 +148,10 @@ class MovieView @JvmOverloads constructor(
                 timeoutHandler?.let { handler ->
                     handler.removeMessages(TimeoutHandler.MESSAGE_HIDE_CONTROLS)
                     if (player.isPlaying) {
-                        handler.sendEmptyMessageDelayed(TimeoutHandler.MESSAGE_HIDE_CONTROLS,
-                                TIMEOUT_CONTROLS)
+                        handler.sendEmptyMessageDelayed(
+                            TimeoutHandler.MESSAGE_HIDE_CONTROLS,
+                                TIMEOUT_CONTROLS
+                        )
                     }
                 }
             }

@@ -21,9 +21,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.android.pictureinpicture.MainActivity">
+    tools:context="com.example.android.pictureinpicture.presentation.main.MainActivity">
 
-    <com.example.android.pictureinpicture.widget.MovieView
+    <com.example.android.pictureinpicture.presentation.widget.MovieView
         android:id="@+id/movie"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -72,6 +72,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_medium"
                 android:text="@string/switch_custom" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/movie_timer_title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:layout_marginTop="@dimen/spacing_medium"/>
+
+            <TextView
+                android:id="@+id/timer_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                tools:text="00:00:00"/>
 
         </LinearLayout>
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.pictureinpicture
+package com.example.android.pictureinpicture.presentation.movie
 
 import android.app.PictureInPictureParams
 import android.content.Intent
@@ -34,7 +34,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.doOnLayout
 import com.example.android.pictureinpicture.databinding.MovieActivityBinding
-import com.example.android.pictureinpicture.widget.MovieView
+import com.example.android.pictureinpicture.presentation.main.MainActivity
+import com.example.android.pictureinpicture.presentation.widget.MovieView
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * Demonstrates usage of Picture-in-Picture when using [MediaSessionCompat].
@@ -57,6 +59,8 @@ class MovieActivity : AppCompatActivity() {
 
         private const val PLAYLIST_SIZE = 2
     }
+
+    private val viewModel: MovieViewModel by viewModel()
 
     private lateinit var binding: MovieActivityBinding
 
@@ -111,6 +115,9 @@ class MovieActivity : AppCompatActivity() {
 
         // Set up the video; it automatically starts.
         binding.movie.setMovieListener(movieListener)
+        viewModel.time.observe(this) {
+            binding.timerTextView.text = it
+        }
     }
 
     override fun onStart() {

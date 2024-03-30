@@ -1,11 +1,11 @@
-### Task 2 - Unit tests
+# Task 2 - Unit tests
 The project already has some tests for MainActivity and MovieActivity, however none for the 
 MainViewModel. Please add some that you would think are appropriate and include any app changes that 
 may be needed. Add any libraries that you would like to be able to achieve this task.
 
 We are looking for how changes to support unit tests are made, as well as choice of things to test.
 
-# Task 2 - Solution Diary
+### Task 2 - Solution Diary
 - create unit test package structure that matches main code structure. 
 - create blank MainViewModelTest class and add dependency for junit5, with lateinit reference to 
 self at top. I typically use "sut" to indicate system under test for unit tests, that way the "when"
@@ -130,3 +130,51 @@ Given timer is started, When invoke startOrPause, Then coroutine should graceful
 Given 12 hours and 34 minutes and 3 and a half hundredths have passed, When started timer, Then display correct time format
 This one was fairly easy, just add expected values to the mock and verify output.
 
+# Task 3 - New feature
+
+When you move from MainActivity to MovieActivity, the timer stops and is restarted when you return 
+to the activity again. Instead of that, we would like for the timer to continue running, even if you 
+switch between screens. The only time the timer should stop is if the user taps on the pause icon 
+in MainActivity.
+
+If you would like to add any UX variations on this, feel free to get creative as you want, just 
+ensure that you maintain the timer across navigation between activites.
+
+We are looking for an implementation of some kind of repository where this state will be stored and 
+how it is plugged into the rest of the app. Also the integration with the current app to make this 
+work will be reviewed.
+
+### Task 3 - Solution Diary
+- Initial thoughts are there are multiple ways to handle this.
+1 - You could use some kind of shared view model to share between the two activities, however I am 
+not a fan of this approach at all as shared view models are often misused and end up causing problems 
+long term. 
+2 - Use a singleton repository that holds onto the value as it is updated in a map within the 
+constructor and have it update when certain ui events occur, such as navigation. This could be connected 
+with a UseCase and/or Manager class in the domain layer. 
+3 - Use a repository that isn't a singleton and save value on certain ui events in a mechanism like 
+SharedPreferences or a database. This could also be connected with a UseCase and/or Manager class 
+in the domain layer like #2. 
+4 - Use a delegate interface/impl for the view model, it could be scoped potentially or a singleton. 
+For this I'd use a singleton.
+- Decided to go for #4. The issue I have with #2 and #3 is that awaitFrame() is really an Android 
+specific functionality and in my opinion is presentation layer logic. #3 also wouldn't work because 
+of how many transactions would need to occur to track the timing. If we want to have the 
+functionality continue through multiple views, a view model delegate to me seems like the best solution. 
+- To begin I updated packages to reflect Clean Architecture layers. Moved classes into relevant sections. 
+Slices are not how I would setup a real project, but for this it'll do. 
+- Create interface and Impl and move across functionality from MainViewModel to TimerViewModelDelegateImpl
+- Update AppModule to inject the delegate and move the previous imports over to the delegate
+- This has now broken our MainViewModelTest from Task1. Let's refactor our code test class to be for 
+TimerViewModelDelegateImpl. This was an easy fix, move class to new package, update class name, 
+update Type for sut and modify setUp to instantiate the correct new class. Run tests, all pass. 
+- Test app to see if this works... start timer and click media session button... press back and crash.
+- Roll back to initial repo. Same behaviour occurs, back navigation is broken in this sample so this 
+is not a new issue. Will navigate only going through buttons.
+- Tested using buttons only, it seems that the ViewModels are creating new instances of the singleton,
+this is unexpected. Verified by logging hashCode. 
+- Went back to AppModule and realised that I had referenced it with factory rather than single.
+Retested and now it works. 
+- Added some text views in MovieActivity to display values and set styles to match AppCompat themes.
+- If I had more time for this feature, I would investigate the implementation of a solution for 
+process death by running adb shell kill <pid> and save the time value to savedStateHandle in the viewmodel.

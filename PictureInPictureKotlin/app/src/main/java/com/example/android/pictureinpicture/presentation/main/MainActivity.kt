@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.pictureinpicture
+package com.example.android.pictureinpicture.presentation.main
 
 import android.app.PendingIntent
 import android.app.PictureInPictureParams
@@ -35,7 +35,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.example.android.pictureinpicture.R
 import com.example.android.pictureinpicture.databinding.MainActivityBinding
+import com.example.android.pictureinpicture.presentation.movie.MovieActivity
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
