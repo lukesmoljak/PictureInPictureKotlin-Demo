@@ -86,3 +86,47 @@ Likely that setting 0L on the mock for updateMillis is the cause, let's pick a d
 March 21 2024 12am UTC (1711065600000)
 - Not sure where this is going to go with debugging these issues, so I'm going to push code up at this 
 current place so it is clearer how I come to my solution. 
+- Following error 
+Function UnconfinedTestCoroutineDispatcher.dispatch can only be used by the yield function. 
+If you wrap Unconfined dispatcher in your code, make sure you properly delegate isDispatchNeeded and dispatch calls.
+- We are able to resolve this issue by changing the test dispatcher to use the Standard Test Dispatcher
+- Now we are facing a new issue, that Choreographer needs to be mocked. 
+I spend some time digging into the code as well as looking at online resources on Medium, stackoverflow, 
+and generally on ChatGPT for some ideas on how to solve this.
+I tried mockkStatic, which I haven't really used before but it didn't work for me in the unit test 
+environment. I came to realise that Choreographer is an android view class meaning to unit test this 
+I'll need to mock a helper class that contains the awaitFrame call.
+Created CoroutinesHelper class to deal with this, and setup in test class and DI / ViewModel.
+Ran the program to test if the helper worked in the production code. It did not, and I realised that 
+I needed to wrap awaitFrame in a withContext call in the helper.
+- The next issue is that awaitFrame if you just mock a 0L response then it will just run forever as 
+the corouitne is in an isActive while loop. So mock this to throw CancellationException. 
+- Next I need to mock updateMillis() so that the time returns correctly. Only was familiar with 
+returning single values so looked up some sources online to find out how to return a variety of results 
+as this function is called many times per function invocation. "answers" and "andThenAnswer" was the 
+solution here.
+- If we run startOrPause() and then clear(), we cannot guarantee order of execution and so unexpected 
+results will happen during our test. To fix this we use advanceUntilIdle() after invoking startOrPause()
+- Then we run clear and try to assert the result, however we need to capture many results of the 
+live data for time to validate. This lead me down a new path to using slots, however getting this to 
+work correctly was a pain, and I found a solution here: https://github.com/mockk/mockk/issues/352
+where nidhindev used a mutable list of slotIds instead of a slot object. Tried this and it worked!
+- However, when I tried to assert the slotIds were correct, I realised that there was a missing 
+value. I ended up changing the order of sequence where instead of calling this slot call half way 
+through the test, I added it to the bottom of the test and made all of my assertions there. 
+- As I changed the way that I tested the function compared to my original concept, I changed the name 
+of the test to reflect this.
+Given timer has passed one second, When invoke clear, Then timer should be cleared
+- At this point I need to re-evaluate what I am able to test for this unit, as I have not found a 
+way to execute start and pause without having threading related test case issues.
+- I deleted this test due to above
+Given timer is started, When invoke clear, Then timer should reset and continue counting
+- I merged the two tests that test "started" Boolean LiveData value as this was fairly easy to test.
+Renamed to: 
+When invoke startOrPause, Then timer state should be correct
+- As the way these coroutines are tested, I had to remove the following test:
+Given timer is started, When invoke startOrPause, Then coroutine should gracefully cancel
+- I added a final test to verify format of time value
+Given 12 hours and 34 minutes and 3 and a half hundredths have passed, When started timer, Then display correct time format
+This one was fairly easy, just add expected values to the mock and verify output.
+

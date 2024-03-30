@@ -23,12 +23,12 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val systemClockHelper: SystemClockHelper
+    private val systemClockHelper: SystemClockHelper,
+    private val coroutinesHelper: CoroutinesHelper
 ): ViewModel() {
 
     private var job: Job? = null
@@ -67,7 +67,7 @@ class MainViewModel(
         while (isActive) {
             timeMillis.value = systemClockHelper.uptimeMillis() - startUptimeMillis
             // Updates on every render frame.
-            awaitFrame()
+            coroutinesHelper.awaitFrame()
         }
     }
 
