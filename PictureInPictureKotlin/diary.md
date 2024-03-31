@@ -178,3 +178,61 @@ Retested and now it works.
 - Added some text views in MovieActivity to display values and set styles to match AppCompat themes.
 - If I had more time for this feature, I would investigate the implementation of a solution for 
 process death by running adb shell kill <pid> and save the time value to savedStateHandle in the viewmodel.
+
+# Task 1 - Legacy support
+Change the minVersion to support API 21. Make change so that the app can gracefully support the 
+newer features when possible with their API levels. You are welcome to make any changes to the UI 
+as you see fit.
+
+We are looking for some thought into UX and why you think some decisions you took might be better 
+for the user. We aren’t that interested in pixel perfect design, Material components are fine, just 
+some thought to UX is best.
+
+### Task 1 - Solution Diary
+Unfortunately I do not have the time to invest in this task, however I will give you a rundown on my 
+initial thought process behind dealing with this task. 
+- First downgrade minSdkVersion to 21 and sync and rebuild project to see issues in code.
+- Activity class errors:
+  - isInPictureInPictureMode - API Level 24
+  - super.onPictureInPictureModeChanged - API 26
+  - enterPictureInPictureMode - API 26
+  - trackPipAnimationHintView - API 26
+  - PictureInPictureParams.Builder() API 26
+  - PictureInPictureParams.Builder().setActions - API 26
+  - PictureInPictureParams.Builder().setAspectRatio - API 26
+  - PictureInPictureParams.Builder().setAutoEnterEnabled - API 31
+  - PictureInPictureParams.Builder().setSeamlessResizeEnabled - API 31
+  - PictureInPictureParams.Builder().build - API 26
+  - PictureInPictureParams.Builder().setSourceRectHint - API 26
+  - RemoteAction - API 26
+- XML issues
+  - android:hyphenationFrequency - API 23
+  - android:justificationMode - API 26
+  - android:drawableTint - API 23
+- Other
+  - Changes to permission handling happened at API 23. This could be an issue, but not for this 
+  example as there are no permissions required. 
+
+- So to resolve the issues for PIP - I would create a lifecycle aware component and using a when 
+statement and current SDK_INT I'd add appropriate handlers to the builder. This component would be 
+reusable for both Activities, and could be used in other features in the future as well. There is a 
+lot to consider here as this will only remove the errors in the compiler. This will not solve our 
+problem of what do we do pre API 26.
+- For UX in this I would set the button component visibility for PIP to GONE if API < 26. 
+- What are our options here?
+  - Hide mentions to PIP
+  - Create our own pre-26 API version of PIP
+  - Find another library that achieves PIP but API but down to level 21
+I think the most likely scenario here is that pre API 26 this feature cannot be supported, unless 
+there is either another library out there to use or the business invests in building out this 
+functionality in house. Realistically for this I think removing mentions to PIP feature pre API 26
+is the solution I would go for. 
+- I would change the text depending on API level as well for the description. I do not believe 
+user will care about features in later versions of Android, they only care about what they have 
+currently. So I would remove any PIP text on this, and I would make the feature focus on the 
+stopwatch for MainActivity and on ActivityMovie I would change the focus of the text in MovieActivity
+to the feature of playing the movie itself and our new functionality of the timer/stopwatch between
+Activities.
+- For the XML specific issues, I would need to investigate these attributes further to determine 
+their impact visually and how they look / behave in lower versions. This would be a conversation 
+I'd have between development and design. 
