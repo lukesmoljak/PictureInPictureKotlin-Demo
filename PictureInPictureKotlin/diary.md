@@ -236,3 +236,9 @@ Activities.
 - For the XML specific issues, I would need to investigate these attributes further to determine 
 their impact visually and how they look / behave in lower versions. This would be a conversation 
 I'd have between development and design. 
+
+I also came to the realisation that this piece is A LOT of work and many resources times from design 
+to development to QA to BA would be consumed. If business was really invested in having this done, 
+my advice would be to not reduce the version to 21 but to consider 26 instead. This would remove 
+the need to provide an alternative solution for PIP and a minor refactor could be done to handle API 
+31 requirements in the PIP Params Builder. 
